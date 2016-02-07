@@ -7,8 +7,12 @@
 //
 
 #import "FISTableViewController.h"
+#import "FISDataStore.h"
+#import "FISMessage.h"
 
 @interface FISTableViewController ()
+@property (strong,nonatomic) NSArray *messagesArray;
+@property (strong,nonatomic) FISDataStore *dataStore;
 
 @end
 
@@ -17,7 +21,24 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.dataStore = [FISDataStore sharedDataStore];
+    [self.dataStore fetchData];
+    self.messagesArray = self.dataStore.messages;
+    
+    if (self.messagesArray == nil) {
+        [self.dataStore generateTestData];
+        self.messagesArray = self.dataStore.messages;
+        NSLog(@"%@", self.messagesArray);
+    }
+    
+    NSLog(@"%@", [self.messagesArray[0] content]);
+
+
+    
 }
+
+
 
 #pragma mark - Table view data source
 

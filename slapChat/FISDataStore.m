@@ -7,6 +7,7 @@
 //
 
 #import "FISDataStore.h"
+#import "FISMessage.h"
 
 @implementation FISDataStore
 @synthesize managedObjectContext = _managedObjectContext;
@@ -35,10 +36,33 @@
     }
 }
 
-//- (void)fetchData
-//{
-    // perform a fetch request to fill an array property on your datastore
-//}
+- (void)fetchData
+{
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"FISMessage" inManagedObjectContext:self.managedObjectContext];
+    [fetchRequest setEntity:entity];
+
+    
+
+    self.messages = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    
+    if ([self.messages count] == 0) {
+        [self generateTestData];
+    }
+
+}
+
+-(void)generateTestData{
+    
+    FISMessage *messageOne = [NSEntityDescription insertNewObjectForEntityForName:@"FISMessage" inManagedObjectContext:self.managedObjectContext];
+    messageOne.content = @"Wow, this is a test message";
+    messageOne.createdAt = [NSDate date];
+    [self saveContext];
+    [self fetchData];
+    
+    
+}
 
 #pragma mark - Core Data Stack
 
@@ -50,11 +74,11 @@
         return _managedObjectContext;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"<#XCDATAMODELD_NAME#>.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Slapchat.sqlite"];
 
     NSError *error = nil;
 
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"<#XCDATAMODELD_NAME#>" withExtension:@"momd"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Slapchat" withExtension:@"momd"];
     NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
 
